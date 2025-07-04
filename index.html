@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linktree Viewer</title>
+  <style>
+    html, body { height: 100%; margin: 0; padding: 0; font-family: system-ui, sans-serif; background: #18181b; color: #fafafa; }
+    .container { max-width: 420px; margin: 0 auto; padding: 2rem 1rem; display: flex; flex-direction: column; align-items: center; }
+    .input-row { display: flex; width: 100%; gap: 0.5rem; margin-bottom: 2rem; }
+    input[type=text] { flex: 1; padding: 0.5rem; border-radius: 6px; border: none; font-size: 1rem; }
+    button { padding: 0.5rem 1.2rem; border-radius: 6px; border: none; background: #27272a; color: #fafafa; font-size: 1rem; cursor: pointer; transition: background 0.2s; }
+    button:hover { background: #3f3f46; }
+    .profile { display: flex; flex-direction: column; align-items: center; width: 100%; }
+    .avatar { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem; }
+    .display-name { font-weight: 700; font-size: 1.2rem; margin-bottom: 0.5rem; }
+    .socials { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+    .links { display: flex; flex-direction: column; gap: 1rem; width: 100%; }
+    * { outline: none !important; box-shadow: none !important; }
+    a:focus, a:active, button:focus, button:active { outline: none !important; box-shadow: none !important; }
+    .link-card { background: #27272a; border-radius: 10px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: background 0.2s; text-decoration: none; }
+    .link-card:hover { background: #3f3f46; }
+    .link-thumb { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; }
+    .link-title { font-size: 1rem; font-weight: 500; color: #fafafa; }
+    .socials a { display: inline-block; padding: 8px 12px; text-decoration: none; background: #27272a; border-radius: 6px; font-size: 0.875rem; font-weight: 500; transition: background 0.2s; }
+    .socials a:hover { background: #3f3f46; }
+    .socials svg {
+      width: 32px;
+      height: 32px;
+      display: block;
+    }
+    @media (max-width: 600px) { .container { padding: 1rem 0.5rem; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="input-row">
+      <input id="lt-input" type="text" placeholder="Linktree username or URL">
+      <button id="lt-fetch">Fetch</button>
+    </div>
+    <div id="profile-container"></div>
+  </div>
+  <script>
+    const socialIconColors = {
+      'YouTube': '#FF0000',
+      'X': '#000000',
+      'Twitter': '#1DA1F2',
+      'Instagram': '#E4405F',
+      'TikTok': '#000000',
+      'Facebook': '#1877F2',
+      'LinkedIn': '#0A66C2',
+      'Telegram': '#0088cc',
+      'GitHub': '#333333',
+      'Discord': '#5865F2',
+      'Twitch': '#9146FF',
+      'Snapchat': '#FFFC00',
+      'Pinterest': '#BD081C',
+      'Reddit': '#FF4500'
+    };
+
+    /**
+     * Fetches and parses a Linktree profile, then renders it.
+     * @param {string} userOrUrl Linktree username or URL
+     */
+    async function fetchAndRender(userOrUrl) {
+      let url = userOrUrl.trim()
+      if (!url.startsWith('http')) url = `https://linktr.ee/${url.replace(/^@/, '')}`
+      const proxy = 'https://corsproxy.io/?'
+      const res = await fetch(proxy + encodeURIComponent(url))
+      const html = await res.text()
+      const doc = new DOMParser().parseFromString(html, 'text/html')
+      const avatar = doc.querySelector('img[role="presentation"]')?.src || ''
+      const displayName = doc.querySelector('h1')?.textContent || ''
+      const socials = Array.from(doc.querySelectorAll('a[data-testid="SocialIcon"]')).map(a => ({
+        href: a.href,
+        title: a.title,
+        icon: a.querySelector('svg')?.outerHTML || ''
+      }))
+      const links = Array.from(doc.querySelectorAll('div[data-testid="Link"] a[data-testid="LinkButton"]')).map(a => ({
+        href: a.href,
+        title: a.querySelector('p')?.textContent || a.href,
+        thumb: a.querySelector('img[data-testid="LinkThumbnailImage"]')?.src || ''
+      }))
+      renderProfile({ avatar, displayName, socials, links })
+    }
+    /**
+     * Renders the profile info and links.
+     * @param {object} profile
+     */
+    function renderProfile(profile) {
+      const pc = document.getElementById('profile-container')
+      pc.innerHTML = ''
+      if (!profile.displayName) return
+      const avatar = document.createElement('img')
+      avatar.className = 'avatar'
+      avatar.src = profile.avatar ? `https://corsproxy.io/?${encodeURIComponent(profile.avatar)}` : ''
+      avatar.alt = ''
+      const name = document.createElement('div')
+      name.className = 'display-name'
+      name.textContent = profile.displayName
+      const socials = document.createElement('div')
+      socials.className = 'socials'
+      profile.socials.forEach(s => {
+        const a = document.createElement('a')
+        a.href = s.href
+        a.target = '_blank'
+        a.rel = 'noopener noreferrer'
+        a.title = s.title
+        a.textContent = s.title
+        a.style.color = '#fafafa'
+        socials.appendChild(a)
+      })
+      const links = document.createElement('div')
+      links.className = 'links'
+      profile.links.forEach(l => {
+        const card = document.createElement('a')
+        card.className = 'link-card'
+        card.href = l.href
+        card.target = '_blank'
+        card.rel = 'noopener noreferrer'
+        if (l.thumb) {
+          const img = document.createElement('img')
+          img.className = 'link-thumb'
+          img.src = `https://corsproxy.io/?${encodeURIComponent(l.thumb)}`
+          img.alt = ''
+          card.appendChild(img)
+        }
+        const title = document.createElement('div')
+        title.className = 'link-title'
+        title.textContent = l.title
+        card.appendChild(title)
+        links.appendChild(card)
+      })
+      const profileDiv = document.createElement('div')
+      profileDiv.className = 'profile'
+      profileDiv.appendChild(avatar)
+      profileDiv.appendChild(name)
+      profileDiv.appendChild(socials)
+      profileDiv.appendChild(links)
+      pc.appendChild(profileDiv)
+    }
+
+    function handleUrlPath() {
+      const hash = window.location.hash.substring(1)
+      if (hash) {
+        document.getElementById('lt-input').value = hash
+        fetchAndRender(hash)
+      }
+    }
+
+    document.getElementById('lt-fetch').onclick = () => {
+      const val = document.getElementById('lt-input').value
+      if (val) {
+        const username = val.replace(/^@/, '').replace(/^https?:\/\/linktr\.ee\//, '')
+        window.location.hash = username
+        fetchAndRender(val)
+      }
+    }
+    document.getElementById('lt-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.getElementById('lt-fetch').click()
+    })
+
+    window.addEventListener('hashchange', handleUrlPath)
+    handleUrlPath()
+  </script>
+</body>
+</html> 
