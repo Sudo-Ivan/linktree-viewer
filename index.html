@@ -3,13 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Linktree Viewer</title>
+  <title>Linktree Viewer - View Profiles Without Tracking</title>
+  <meta name="description" content="View Linktree profiles without tracking, analytics, or cookies. Clean, fast, and privacy-focused Linktree viewer.">
+  <meta name="keywords" content="linktree, viewer, privacy, no tracking, bio links, social media">
+  <meta name="author" content="Ivan">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://sudo-ivan.github.io/linktree-viewer/">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://sudo-ivan.github.io/linktree-viewer/">
+  <meta property="og:title" content="Linktree Viewer - View Profiles Without Tracking">
+  <meta property="og:description" content="View Linktree profiles without tracking, analytics, or cookies. Clean, fast, and privacy-focused Linktree viewer.">
+  <meta property="og:site_name" content="Linktree Viewer">
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary">
+  <meta property="twitter:url" content="https://sudo-ivan.github.io/linktree-viewer/">
+  <meta property="twitter:title" content="Linktree Viewer - View Profiles Without Tracking">
+  <meta property="twitter:description" content="View Linktree profiles without tracking, analytics, or cookies. Clean, fast, and privacy-focused Linktree viewer.">
+  
+  <!-- Additional SEO -->
+  <meta name="theme-color" content="#18181b">
+  <meta name="msapplication-TileColor" content="#18181b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Linktree Viewer">
+
   <style>
-    html, body { height: 100%; margin: 0; padding: 0; font-family: system-ui, sans-serif; background: #18181b; color: #fafafa; }
+    html, body { height: 100%; margin: 0; padding: 0; font-family: system-ui, sans-serif; background: #18181b; color: #fafafa; -webkit-text-size-adjust: 100%; }
     .container { max-width: 420px; margin: 0 auto; padding: 2rem 1rem; display: flex; flex-direction: column; align-items: center; }
     .input-row { display: flex; width: 100%; gap: 0.5rem; margin-bottom: 2rem; }
-    input[type=text] { flex: 1; padding: 0.5rem; border-radius: 6px; border: none; font-size: 1rem; }
-    button { padding: 0.5rem 1.2rem; border-radius: 6px; border: none; background: #27272a; color: #fafafa; font-size: 1rem; cursor: pointer; transition: background 0.2s; }
+    input[type=text] { flex: 1; padding: 0.5rem; border-radius: 6px; border: none; font-size: 1rem; background: #27272a; color: #fafafa; }
+    input[type=text]:focus { background: #3f3f46; }
+    button { padding: 0.5rem 1.2rem; border-radius: 6px; border: none; background: #27272a; color: #fafafa; font-size: 1rem; cursor: pointer; transition: background 0.2s; -webkit-tap-highlight-color: transparent; }
     button:hover { background: #3f3f46; }
     .profile { display: flex; flex-direction: column; align-items: center; width: 100%; }
     .avatar { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem; }
@@ -32,7 +59,31 @@
     .loading { opacity: 0.6; pointer-events: none; }
     .error { color: #ef4444; text-align: center; padding: 1rem; }
     .welcome { text-align: center; color: #a1a1aa; font-size: 1rem; margin: 2rem 0; }
-    @media (max-width: 600px) { .container { padding: 1rem 0.5rem; } }
+
+    /* Mobile optimizations */
+    @media (max-width: 600px) { 
+      .container { padding: 1rem 0.5rem; min-height: 100vh; box-sizing: border-box; }
+      .input-row { flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem; }
+      input[type=text] { padding: 0.75rem; font-size: 16px; border-radius: 8px; }
+      button { padding: 0.75rem 1.5rem; font-size: 16px; border-radius: 8px; min-height: 44px; }
+      .welcome { font-size: 0.9rem; margin: 1.5rem 0; padding: 0 0.5rem; }
+      .socials { flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
+      .socials a { padding: 0.6rem 1rem; font-size: 0.8rem; }
+      .link-card { padding: 0.75rem; border-radius: 8px; }
+      .link-thumb { width: 40px; height: 40px; }
+      .link-title { font-size: 0.9rem; }
+      .display-name { font-size: 1.1rem; }
+    }
+    
+    @media (max-width: 480px) {
+      .container { padding: 0.75rem 0.5rem; }
+      .input-row { gap: 0.5rem; }
+      input[type=text] { padding: 0.6rem; }
+      button { padding: 0.6rem 1.2rem; }
+      .welcome { font-size: 0.85rem; margin: 1rem 0; }
+      .socials a { padding: 0.5rem 0.8rem; font-size: 0.75rem; }
+      .link-card { padding: 0.6rem; }
+    }
   </style>
 </head>
 <body>
